@@ -28,8 +28,8 @@ int main(void) {
     printf("\n");
 
     // ── Iterate over array (no range-based for in C) ─
-    int fruits_len = 3;
     const char* fruits[] = {"apple", "banana", "cherry"};
+    int fruits_len = 3;
 
     for (int i = 0; i < fruits_len; i++)
         printf("%s ", fruits[i]);
@@ -51,21 +51,21 @@ int main(void) {
     } while (x < 5);    // false immediately, but ran once
     printf("\n");
 
-    // ── break — exit loop ─────────────────────
+    // ── break — exit loop early ───────────────
     for (int i = 0; i < 10; i++) {
         if (i == 5) break;
         printf("%d ", i);   // 0 1 2 3 4
     }
     printf("\n");
 
-    // ── continue — skip iteration ─────────────
+    // ── continue — skip current iteration ─────
     for (int i = 0; i < 10; i++) {
         if (i % 2 == 0) continue;
         printf("%d ", i);   // 1 3 5 7 9
     }
     printf("\n");
 
-    // ── Nested loops with goto (avoid — just for demo) ─
+    // ── Nested loops with goto (avoid — demo only) ─
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             if (i == 1 && j == 1) goto exitLoop;
@@ -75,7 +75,7 @@ int main(void) {
     exitLoop:
     printf("\nExited nested loop\n");
 
-    // Better: use a flag
+    // Better: use a flag variable
     int done = 0;
     for (int i = 0; i < 3 && !done; i++) {
         for (int j = 0; j < 3 && !done; j++) {
@@ -85,18 +85,18 @@ int main(void) {
     }
     printf("\n");
 
-    // ── Iterate over string characters ────────
+    // ── Loop over string characters ───────────
     const char* word = "hello";
     for (int i = 0; word[i] != '\0'; i++)
         printf("%c-", word[i]);
     printf("\n");
 
-    // Alternative with pointer
+    // Pointer-style iteration
     for (const char* p = word; *p; p++)
         printf("%c ", *p);
     printf("\n");
 
-    // ── Iterate over array with pointer arithmetic ─
+    // ── Pointer arithmetic over array ─────────
     int data[] = {5, 2, 8, 1, 9, 3};
     int n = (int)(sizeof(data) / sizeof(data[0]));
 
@@ -106,7 +106,7 @@ int main(void) {
 
     // ── Infinite loop ─────────────────────────
     int num = 1;
-    while (1) {   // or for (;;)
+    while (1) {       // or: for (;;)
         printf("%d ", num);
         num *= 2;
         if (num > 64) break;
@@ -120,7 +120,7 @@ int main(void) {
         printf("\n");
     }
 
-    // ── Loop with index tracking ──────────────
+    // ── Loop with index ───────────────────────
     const char* items[] = {"a", "b", "c"};
     int items_len = 3;
     for (int i = 0; i < items_len; i++)

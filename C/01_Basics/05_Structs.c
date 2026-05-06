@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────
-//  STRUCTS & LINKED LISTS
-//  (C has no classes or built-in collections —
-//   structs + pointers are the foundation)
+//  STRUCTS, UNIONS, ENUMS & LINKED LISTS
+//  (C has no classes — structs + pointers
+//   are the foundation for data structures)
 // ─────────────────────────────────────────
 
 #include <stdio.h>
@@ -14,18 +14,18 @@ struct Point {
     int y;
 };
 
-// typedef — remove the need to write "struct" every time
+// typedef removes the need to write "struct" every time
 typedef struct {
-    char name[50];
-    int  age;
+    char   name[50];
+    int    age;
     double salary;
 } Employee;
 
 // ── Nested struct ─────────────────────────
 typedef struct {
-    char  street[100];
-    char  city[50];
-    int   zip;
+    char street[100];
+    char city[50];
+    int  zip;
 } Address;
 
 typedef struct {
@@ -34,13 +34,13 @@ typedef struct {
     Address address;
 } Person;
 
-// ── Struct with self-referential pointer (for linked list) ─
+// ── Self-referential struct (singly linked list node) ─
 typedef struct Node {
     int          data;
-    struct Node* next;   // must use "struct Node*" not "Node*" here
+    struct Node* next;   // must use "struct Node*" here, not "Node*"
 } Node;
 
-// ── Linked list functions ─────────────────
+// ── Linked list helpers ───────────────────
 Node* createNode(int data) {
     Node* node = (Node*)malloc(sizeof(Node));
     if (!node) { perror("malloc"); return NULL; }
@@ -49,18 +49,18 @@ Node* createNode(int data) {
     return node;
 }
 
-void listPush(Node** head, int data) {   // prepend
-    Node* node = createNode(data);
-    node->next = *head;
-    *head      = node;
-}
-
-void listAppend(Node** head, int data) {   // append
+void listAppend(Node** head, int data) {
     Node* node = createNode(data);
     if (!*head) { *head = node; return; }
     Node* cur = *head;
     while (cur->next) cur = cur->next;
     cur->next = node;
+}
+
+void listPush(Node** head, int data) {   // prepend
+    Node* node = createNode(data);
+    node->next = *head;
+    *head      = node;
 }
 
 void listPrint(const Node* head) {
@@ -75,14 +75,6 @@ int listLength(const Node* head) {
     return len;
 }
 
-void listFree(Node* head) {
-    while (head) {
-        Node* tmp = head->next;
-        free(head);
-        head = tmp;
-    }
-}
-
 Node* listDelete(Node* head, int target) {
     if (!head) return NULL;
     if (head->data == target) {
@@ -94,11 +86,19 @@ Node* listDelete(Node* head, int target) {
     while (cur->next && cur->next->data != target)
         cur = cur->next;
     if (cur->next) {
-        Node* tmp  = cur->next->next;
+        Node* tmp = cur->next->next;
         free(cur->next);
-        cur->next  = tmp;
+        cur->next = tmp;
     }
     return head;
+}
+
+void listFree(Node* head) {
+    while (head) {
+        Node* tmp = head->next;
+        free(head);
+        head = tmp;
+    }
 }
 
 int main(void) {
@@ -107,19 +107,18 @@ int main(void) {
     //  BASIC STRUCTS
     // ════════════════════════════════════
 
-    // Initialize with designated initializers (C99)
+    // Designated initializers (C99)
     struct Point p1 = {.x = 3, .y = 4};
     struct Point p2 = {10, 20};   // positional
 
     printf("p1: (%d, %d)\n", p1.x, p1.y);
     printf("p2: (%d, %d)\n", p2.x, p2.y);
 
-    // Struct copy (value copy — completely independent)
+    // Struct copy — fully independent value copy
     struct Point p3 = p1;
     p3.x = 99;
     printf("p1.x still: %d\n", p1.x);   // 3 — unchanged
 
-    // Employee struct
     Employee e1 = {"Alice", 30, 75000.0};
     printf("Name: %s, Age: %d, Salary: %.2f\n", e1.name, e1.age, e1.salary);
 
@@ -145,14 +144,15 @@ int main(void) {
         person.address.city,
         person.address.zip);
 
-    // ── Array of structs ─────────────────────
+    // ── Array of structs ──────────────────────
     Employee team[3] = {
         {"Carol", 28, 68000},
         {"Dave",  35, 82000},
         {"Eve",   22, 55000}
     };
     for (int i = 0; i < 3; i++)
-        printf("%-8s age %d salary %.0f\n", team[i].name, team[i].age, team[i].salary);
+        printf("%-8s age %d salary %.0f\n",
+            team[i].name, team[i].age, team[i].salary);
 
     // ── Dynamic struct allocation ─────────────
     Employee* dynEmp = (Employee*)malloc(sizeof(Employee));
@@ -163,34 +163,33 @@ int main(void) {
     printf("Dynamic: %s %d\n", dynEmp->name, dynEmp->age);
     free(dynEmp);
 
-    // ── sizeof struct ─────────────────────────
     printf("sizeof(Employee) = %zu bytes\n", sizeof(Employee));
-    // May be larger than sum of fields due to alignment padding
 
     // ════════════════════════════════════
     //  SINGLY LINKED LIST
     // ════════════════════════════════════
 
     Node* head = NULL;
-
     listAppend(&head, 1);
     listAppend(&head, 2);
     listAppend(&head, 3);
-    listPush(&head, 0);         // prepend 0
+    listPush(&head, 0);          // prepend
 
-    listPrint(head);             // 0 -> 1 -> 2 -> 3 -> NULL
+    listPrint(head);              // 0 -> 1 -> 2 -> 3 -> NULL
     printf("Length: %d\n", listLength(head));
 
     head = listDelete(head, 2);
-    listPrint(head);             // 0 -> 1 -> 3 -> NULL
+    listPrint(head);              // 0 -> 1 -> 3 -> NULL
 
-    head = listDelete(head, 0);  // delete head
-    listPrint(head);             // 1 -> 3 -> NULL
+    head = listDelete(head, 0);   // delete head node
+    listPrint(head);              // 1 -> 3 -> NULL
 
     listFree(head);
     head = NULL;
 
-    // ── union — same memory, different interpretations ─
+    // ════════════════════════════════════
+    //  UNION — same memory, different types
+    // ════════════════════════════════════
     union Data {
         int   i;
         float f;
@@ -199,13 +198,14 @@ int main(void) {
 
     union Data d;
     d.i = 65;
-    printf("int:   %d\n", d.i);    // 65
-    printf("char:  %c\n", d.str[0]); // 'A' (same bytes as int 65)
+    printf("int:   %d\n",   d.i);      // 65
+    printf("char:  %c\n",   d.str[0]); // 'A' (same bytes as int 65)
     d.f = 3.14f;
-    printf("float: %f\n", d.f);    // 3.14 (overwrote i!)
-    // Only the last assigned member is valid
+    printf("float: %f\n",   d.f);      // 3.14 (overwrote i — only last member valid)
 
-    // ── enum ──────────────────────────────────
+    // ════════════════════════════════════
+    //  ENUM
+    // ════════════════════════════════════
     typedef enum { MON=1, TUE, WED, THU, FRI, SAT, SUN } Day;
     Day today = WED;
     printf("Day: %d\n", today);   // 3
@@ -214,5 +214,6 @@ int main(void) {
     Color c = GREEN;
     printf("Color: 0x%06X\n", c);   // 0x00FF00
 
+    (void)p2; (void)p3;
     return 0;
 }

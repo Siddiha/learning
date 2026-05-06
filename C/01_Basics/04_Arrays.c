@@ -3,16 +3,12 @@
 // ─────────────────────────────────────────
 
 #include <stdio.h>
-#include <stdlib.h>  // malloc, calloc, realloc, free
+#include <stdlib.h>  // malloc, calloc, realloc, free, qsort, bsearch
 #include <string.h>  // memset, memcpy, memmove
 
-// Helper — compare ints for qsort
-int cmpAsc(const void* a, const void* b) {
-    return *(int*)a - *(int*)b;
-}
-int cmpDesc(const void* a, const void* b) {
-    return *(int*)b - *(int*)a;
-}
+// Compare helpers for qsort / bsearch
+int cmpAsc (const void* a, const void* b) { return *(int*)a - *(int*)b; }
+int cmpDesc(const void* a, const void* b) { return *(int*)b - *(int*)a; }
 
 int main(void) {
 
@@ -21,14 +17,14 @@ int main(void) {
     // ════════════════════════════════════
 
     int nums[5] = {3, 1, 4, 1, 5};
-    int zeros[5] = {0};          // all zeros (first 0 fills the rest too)
+    int zeros[5] = {0};          // all zeros
     int partial[5] = {1, 2};     // {1, 2, 0, 0, 0}
 
     printf("%d\n", nums[0]);     // 3
     printf("%d\n", nums[4]);     // 5
     // No bounds checking! nums[10] is undefined behavior
 
-    int size = (int)(sizeof(nums) / sizeof(nums[0]));   // length
+    int size = (int)(sizeof(nums) / sizeof(nums[0]));
     printf("size: %d\n", size);   // 5
 
     for (int i = 0; i < 5; i++)
@@ -45,9 +41,9 @@ int main(void) {
         printf("\n");
     }
 
-    // ── memset — fill with a byte value ───────
+    // ── memset — fill memory with a byte value ─
     int arr[5];
-    memset(arr, 0, sizeof(arr));   // fill with 0
+    memset(arr, 0, sizeof(arr));
     for (int i = 0; i < 5; i++)
         printf("%d ", arr[i]);   // 0 0 0 0 0
     printf("\n");
@@ -58,9 +54,9 @@ int main(void) {
     memcpy(dst, src, sizeof(src));
     printf("%d\n", dst[2]);   // 3
 
-    // ── memmove — safe overlapping copy ───────
+    // ── memmove — safe even for overlapping regions ─
     int buf[8] = {1, 2, 3, 4, 5, 0, 0, 0};
-    memmove(buf + 2, buf, 5 * sizeof(int));   // shift right by 2
+    memmove(buf + 2, buf, 5 * sizeof(int));
     printf("%d\n", buf[4]);   // 3
 
     // ── Sort with qsort ───────────────────────
@@ -84,7 +80,7 @@ int main(void) {
     if (found)
         printf("Found %d at index %td\n", *found, found - sorted);
 
-    // ── Min / Max (manual — no built-in for arrays) ─
+    // ── Min / Max (manual) ────────────────────
     int minVal = data[0], maxVal = data[0];
     for (int i = 1; i < n; i++) {
         if (data[i] < minVal) minVal = data[i];
@@ -103,25 +99,25 @@ int main(void) {
 
     // malloc — allocate uninitialized memory
     int* heap = (int*)malloc(5 * sizeof(int));
-    if (!heap) { perror("malloc failed"); return 1; }
+    if (!heap) { perror("malloc"); return 1; }
     for (int i = 0; i < 5; i++) heap[i] = i + 1;
     printf("%d\n", heap[2]);   // 3
     free(heap);
     heap = NULL;   // avoid dangling pointer
 
     // calloc — allocate and zero-initialize
-    int* zeros2 = (int*)calloc(5, sizeof(int));
-    if (!zeros2) { perror("calloc failed"); return 1; }
-    printf("%d\n", zeros2[0]);   // 0
-    free(zeros2);
+    int* czeros = (int*)calloc(5, sizeof(int));
+    if (!czeros) { perror("calloc"); return 1; }
+    printf("%d\n", czeros[0]);   // 0
+    free(czeros);
 
     // realloc — resize existing allocation
     int* dyn = (int*)malloc(3 * sizeof(int));
-    if (!dyn) { perror("malloc failed"); return 1; }
+    if (!dyn) { perror("malloc"); return 1; }
     dyn[0] = 1; dyn[1] = 2; dyn[2] = 3;
 
     int* tmp = (int*)realloc(dyn, 6 * sizeof(int));
-    if (!tmp) { free(dyn); perror("realloc failed"); return 1; }
+    if (!tmp) { free(dyn); perror("realloc"); return 1; }
     dyn = tmp;
     dyn[3] = 4; dyn[4] = 5; dyn[5] = 6;
 
@@ -156,12 +152,11 @@ int main(void) {
     free(grid);
 
     // ── VLA — variable-length array (C99) ─────
-    int len;
-    printf("Enter array size (try 4): ");
-    len = 4;   // hardcoded for demo
-    int vla[len];   // size known only at runtime (stack allocation)
-    for (int i = 0; i < len; i++) vla[i] = i * 10;
+    int vlen = 4;   // runtime value
+    int vla[vlen];  // stack-allocated, size determined at runtime
+    for (int i = 0; i < vlen; i++) vla[i] = i * 10;
     printf("vla[2] = %d\n", vla[2]);   // 20
 
+    (void)zeros; (void)partial;
     return 0;
 }

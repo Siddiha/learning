@@ -71,8 +71,7 @@ int main(void) {
             printf("Unknown\n");
     }
 
-    // ── No "if initializer" in C (C99/C17 has no such syntax) ─
-    // Declare before the if:
+    // ── No if-initializer in C — declare before ─
     int result = score - 50;
     if (result > 0) {
         printf("Passed by %d points\n", result);
@@ -80,7 +79,7 @@ int main(void) {
         printf("Failed by %d points\n", -result);
     }
 
-    // ── Logical operators in conditions ───────
+    // ── Logical operators ─────────────────────
     int x = 15;
     if (x > 10 && x < 20)
         printf("Between 10 and 20\n");
@@ -95,15 +94,15 @@ int main(void) {
     if (ptr == NULL)
         printf("Pointer is null\n");
 
-    if (!ptr)             // same as ptr == NULL
+    if (!ptr)              // same as ptr == NULL
         printf("Also null\n");
 
     int val = 42;
     ptr = &val;
-    if (ptr)              // non-null pointer is truthy
+    if (ptr)               // non-null pointer is truthy
         printf("Pointer has value: %d\n", *ptr);
 
-    // ── Compile-time conditionals (#if / #ifdef) ─
+    // ── Compile-time conditionals ─────────────
     #define DEBUG 1
 
     #if DEBUG
@@ -112,7 +111,7 @@ int main(void) {
         printf("Release mode\n");
     #endif
 
-    // #ifdef — check if a macro is defined
+    // #ifdef — check if a macro is defined at all
     #ifdef _WIN32
         printf("Running on Windows\n");
     #elif defined(__linux__)
@@ -123,7 +122,7 @@ int main(void) {
         printf("Unknown platform\n");
     #endif
 
-    // ── bool usage (C99 stdbool.h) ────────────
+    // ── bool (C99 stdbool.h) ──────────────────
     bool isValid = true;
     bool isEmpty = false;
 
