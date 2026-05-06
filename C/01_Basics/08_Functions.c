@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>   // variadic functions
 
 // ── Basic function ────────────────────────
 void greet(const char* name) {
@@ -38,16 +39,16 @@ void printArr(const int* arr, int size) {
     printf("\n");
 }
 
-// ── Return pointer (must return heap or static, NOT local!) ─
+// ── Return heap pointer (caller must free) ─
 int* makeArray(int size) {
     int* arr = (int*)malloc(size * sizeof(int));
     for (int i = 0; i < size; i++) arr[i] = i + 1;
-    return arr;   // caller must free()
+    return arr;
 }
 
-// ── No overloading in C — use different names or _Generic ─
-int    addInt(int a, int b)         { return a + b; }
-double addDouble(double a, double b){ return a + b; }
+// ── No overloading in C — use distinct names ─
+int    addInt   (int a, int b)          { return a + b; }
+double addDouble(double a, double b)    { return a + b; }
 
 // _Generic (C11) — compile-time type dispatch
 #define ADD(a, b) _Generic((a), int: addInt, double: addDouble)(a, b)
@@ -63,9 +64,7 @@ int fibonacci(int n) {
     return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-// ── Variadic functions (<stdarg.h>) ───────
-#include <stdarg.h>
-
+// ── Variadic function ─────────────────────
 int sumN(int count, ...) {
     va_list args;
     va_start(args, count);
@@ -77,12 +76,13 @@ int sumN(int count, ...) {
 }
 
 // ── Function pointers ─────────────────────
+int multiply(int a, int b) { return a * b; }
+
 int applyOp(int a, int b, int (*op)(int, int)) {
     return op(a, b);
 }
-int multiply(int a, int b) { return a * b; }
 
-// ── Typedef for function pointer ──────────
+// ── typedef for function pointer ──────────
 typedef int (*BinaryOp)(int, int);
 
 BinaryOp getOp(char opChar) {
@@ -93,12 +93,12 @@ BinaryOp getOp(char opChar) {
     }
 }
 
-// ── Static function — private to this file ─
+// ── static — private to this translation unit ─
 static void helper(void) {
     printf("Private helper\n");
 }
 
-// ── Inline function (C99) — hint to compiler ─
+// ── inline — hint to compiler to inline the call ─
 static inline int square(int x) {
     return x * x;
 }
@@ -120,18 +120,18 @@ int main(void) {
     doublePtr(&a);
     printf("%d\n", a);   // 20 — changed!
 
-    // Array passed as pointer (arrays decay to pointers)
+    // Array decays to pointer automatically
     int data[] = {1, 2, 3, 4, 5};
     printArr(data, 5);
 
-    // Return heap-allocated array
+    // Heap-allocated array
     int* arr = makeArray(5);
     printArr(arr, 5);   // 1 2 3 4 5
     free(arr);
 
-    // _Generic dispatch
-    printf("%d\n",   ADD(2, 3));        // 5     (int)
-    printf("%f\n",   ADD(2.5, 3.5));    // 6.0   (double)
+    // _Generic dispatch (C11)
+    printf("%d\n",   ADD(2, 3));       // 5     (int)
+    printf("%f\n",   ADD(2.5, 3.5));   // 6.0   (double)
 
     // Recursion
     printf("%lld\n", factorial(5));    // 120
@@ -151,7 +151,6 @@ int main(void) {
 
     BinaryOp op = getOp('+');
     if (op) printf("%d\n", op(5, 3));   // 8
-
     op = getOp('*');
     if (op) printf("%d\n", op(5, 3));   // 15
 
@@ -159,7 +158,6 @@ int main(void) {
     BinaryOp ops[] = {add, multiply};
     printf("%d %d\n", ops[0](4, 5), ops[1](4, 5));   // 9 20
 
-    // Inline
     printf("%d\n", square(7));   // 49
 
     helper();
