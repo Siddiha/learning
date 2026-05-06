@@ -111,5 +111,9 @@ int main(void) {
     _Bool flag = 1;
     printf("_Bool: %d\n", flag);
 
+    (void)empty; (void)city; (void)bigger; (void)small;
+    (void)positive; (void)pi; (void)huge; (void)MAX_SIZE;
+    (void)parsedL; (void)nullPtr;
+
     return 0;
 }

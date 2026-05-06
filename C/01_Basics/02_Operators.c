@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────
 
 #include <stdio.h>
+#include <stdlib.h>  // abs
 #include <math.h>    // pow, sqrt, fabs, ceil, floor, round, log, sin, M_PI
 
 int main(void) {
@@ -47,7 +48,7 @@ int main(void) {
     printf("%d\n", 1 || 0);   // 1 (true)
     printf("%d\n", !1);       // 0 (false)
 
-    // Short-circuit
+    // Short-circuit evaluation
     int n = 0;
     printf("%d\n", n != 0 && 10/n > 1);  // 0 — no division by zero!
 
@@ -76,7 +77,8 @@ int main(void) {
     printf("%d\n",  *ptr);         // 42 — * = dereference
 
     // ── Math functions (from <math.h>) ────────
-    printf("%d\n",   abs(-5));         // 5  (from <stdlib.h>)
+    // Link with -lm on GCC: gcc file.c -lm
+    printf("%d\n",   abs(-5));         // 5
     printf("%f\n",   fabs(-3.14));     // 3.14 (float abs)
     printf("%f\n",   sqrt(25.0));      // 5
     printf("%f\n",   pow(3, 4));       // 81
@@ -87,15 +89,22 @@ int main(void) {
     printf("%f\n",   log10(1000));     // 3
     printf("%f\n",   sin(M_PI / 2));   // 1
 
-    // max/min — no built-in in C, use macros or ternary
+    // max / min — no built-in for scalars; use ternary or macros
     int p = 3, q = 7;
     int maximum = p > q ? p : q;
     int minimum = p < q ? p : q;
     printf("max: %d, min: %d\n", maximum, minimum);
 
+    // Macro versions (be careful with side effects!)
+    #define MAX(a,b) ((a) > (b) ? (a) : (b))
+    #define MIN(a,b) ((a) < (b) ? (a) : (b))
+    printf("MAX: %d\n", MAX(3, 7));   // 7
+    printf("MIN: %d\n", MIN(3, 7));   // 3
+
     // ── Comma operator (rare, but valid C) ────
     int b = (1, 2, 3);   // evaluates all, returns last
     printf("%d\n", b);   // 3
 
+    (void)age;
     return 0;
 }
