@@ -39,4 +39,24 @@ func main() {
 	for i := 5; i >= 1; i-- {
 		fmt.Println(i)
 	}
+
+	// map: key-value pairs
+	scores := map[string]int{
+		"Alice": 95,
+		"Bob":   87,
+		"Carol": 92,
+	}
+
+	fmt.Println("\nStudent scores:")
+	for student, score := range scores {
+		fmt.Printf("%s scored %d\n", student, score)
+	}
+
+	// add a new entry
+	scores["Dave"] = 78
+	fmt.Println("Dave added with score:", scores["Dave"])
+
+	// delete an entry
+	delete(scores, "Bob")
+	fmt.Println("Bob removed. Remaining students:", len(scores))
 }
