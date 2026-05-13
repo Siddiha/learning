@@ -55,7 +55,6 @@ func main() {
 	scores["Dave"] = 78
 	fmt.Println("Dave added with score:", scores["Dave"])
 
-	// delete an entry
 	delete(scores, "Bob")
 	fmt.Println("Bob removed. Remaining students:", len(scores))
 }
