@@ -40,7 +40,6 @@ func main() {
 		fmt.Println(i)
 	}
 
-	// map: key-value pairs
 	scores := map[string]int{
 		"Alice": 95,
 		"Bob":   87,
